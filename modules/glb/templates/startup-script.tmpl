@@ -1,0 +1,10 @@
+#!/bin/bash
+
+set -xe
+
+curl https://packages.gitlab.com/install/repositories/gitlab/gitlab-ce/script.deb.sh | sudo bash
+apt-get install gitlab-ce -y
+sed -i 's/^external_url.*/external_url "https:\/\/budita.dev"/' /etc/gitlab/gitlab.rb
+sed -i "s/^nginx\['listen_https'\].*/nginx['listen_https'] = false/" /etc/gitlab/gitlab.rb
+gitlab-ctl reconfigure
+gitlab-ctl restart
