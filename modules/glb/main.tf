@@ -1,7 +1,3 @@
-resource "google_compute_address" "static" {
-  name = "first-static-ip"
-}
-
 resource "google_compute_instance_template" "gitlab-server-template" {
   name_prefix    = "gitlab-server-"
   machine_type   = "n1-standard-1"
@@ -25,7 +21,7 @@ resource "google_compute_instance_template" "gitlab-server-template" {
     subnetwork = "${var.subnet}"
 
     access_config {
-      nat_ip = google_compute_address.static.address
+      # nat_ip = "35.200.172.194"
     }
   }
   service_account {
@@ -39,10 +35,10 @@ resource "google_compute_instance_template" "gitlab-server-template" {
 resource "google_compute_instance_group_manager" "gitlab-server-mig-a" {
   name               = "gitlab-server-mig-a"
   base_instance_name = "gitlab-server"
-  instance_template  = "${google_compute_instance_template.gitlab-server-template.self_link}"
-  update_strategy    = "ROLLING_UPDATE"
+  version {
+      instance_template  = "${google_compute_instance_template.gitlab-server-template.self_link}"
+  }
   zone               = "asia-south1-a"
-
   named_port {
     name = "http"
     port = 80
@@ -53,8 +49,8 @@ resource "google_compute_instance_group_manager" "gitlab-server-mig-a" {
   }
 }
 
-resource "google_compute_health_check" "gitlab-server-mig-a-healthcheck" {
-  name               = "gitlab-server-mig-a-healthcheck"
+resource "google_compute_health_check" "default" {
+  name               = "gitlab-server-healthcheck"
   check_interval_sec = 5
   timeout_sec        = 1
 
@@ -71,8 +67,9 @@ resource "google_compute_health_check" "gitlab-server-mig-a-healthcheck" {
 resource "google_compute_instance_group_manager" "gitlab-server-mig-b" {
   name               = "gitlab-server-mig-b"
   base_instance_name = "gitlab-server"
-  instance_template  = "${google_compute_instance_template.gitlab-server-template.self_link}"
-  update_strategy    = "ROLLING_UPDATE"
+  version {
+      instance_template  = "${google_compute_instance_template.gitlab-server-template.self_link}"
+  }
   zone               = "asia-south1-b"
 
   named_port {
@@ -85,26 +82,11 @@ resource "google_compute_instance_group_manager" "gitlab-server-mig-b" {
   }
 }
 
-resource "google_compute_health_check" "gitlab-server-mig-b-healthcheck" {
-  name               = "gitlab-server-mig-b-healthcheck"
-  check_interval_sec = 5
-  timeout_sec        = 1
-
-  http_health_check {
-    port         = "80"
-    request_path = "/"
-  }
-
-  lifecycle {
-    create_before_destroy = true
-  }
-}
-
 resource "google_compute_backend_service" "default" {
   name          = "gitlab-server-backend-service"
   port_name     = "http"
   protocol      = "HTTP"
-  health_checks = ["${google_compute_health_check.gitlab-server-mig-a-healthcheck.self_link}", "${google_compute_health_check.gitlab-server-mig-b-healthcheck.self_link}"]
+  health_checks = ["${google_compute_health_check.default.self_link}"]
 
   backend {
     group = "${google_compute_instance_group_manager.gitlab-server-mig-a.instance_group}"
@@ -135,8 +117,8 @@ resource "google_compute_ssl_certificate" "default" {
 
 resource "google_compute_global_forwarding_rule" "default" {
   name       = "global-rule"
-  port_range = "80"
-  ip_address = "${google_compute_global_address.static.address}"
+  port_range = "443"
+  ip_address = "34.107.133.237"
   target     = "${google_compute_target_https_proxy.default.self_link}"
 }
 

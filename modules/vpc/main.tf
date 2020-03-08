@@ -32,3 +32,13 @@ module "vpc" {
     }
   ]
 }
+
+resource "google_compute_firewall" "default" {
+  name    = "gitlab-firewall"
+  network = module.vpc.network_name
+
+  allow {
+    protocol = "tcp"
+    ports    = ["80", "443", "22"]
+  }
+}
