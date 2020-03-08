@@ -1,2 +1,2 @@
-modules/glb/ssl-cert/*
+# modules/glb/ssl-cert/*
 **/.terraform/*
