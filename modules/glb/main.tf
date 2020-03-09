@@ -2,6 +2,7 @@ resource "google_compute_instance_template" "gitlab-server-template" {
   name_prefix    = "gitlab-server-"
   machine_type   = "n1-standard-1"
   region         = "asia-south1"
+  tags           = ["allow-health-checks"]
   can_ip_forward = true
 
   metadata_startup_script = templatefile("${path.module}/templates/startup-script.tmpl", {})
@@ -21,7 +22,6 @@ resource "google_compute_instance_template" "gitlab-server-template" {
     subnetwork = "${var.subnet}"
 
     access_config {
-      # nat_ip = "35.200.172.194"
     }
   }
   service_account {
@@ -32,13 +32,24 @@ resource "google_compute_instance_template" "gitlab-server-template" {
   }
 }
 
+resource "google_compute_health_check" "autohealing" {
+  name                = "autohealing-health-check"
+  timeout_sec        = 5
+  check_interval_sec = 5
+
+  tcp_health_check {
+    port = "80"
+  }
+}
+
 resource "google_compute_instance_group_manager" "gitlab-server-mig-a" {
   name               = "gitlab-server-mig-a"
   base_instance_name = "gitlab-server"
   version {
-      instance_template  = "${google_compute_instance_template.gitlab-server-template.self_link}"
+    instance_template = "${google_compute_instance_template.gitlab-server-template.self_link}"
   }
-  zone               = "asia-south1-a"
+  target_size = 1
+  zone = "asia-south1-a"
   named_port {
     name = "http"
     port = 80
@@ -47,20 +58,10 @@ resource "google_compute_instance_group_manager" "gitlab-server-mig-a" {
   lifecycle {
     create_before_destroy = true
   }
-}
 
-resource "google_compute_health_check" "default" {
-  name               = "gitlab-server-healthcheck"
-  check_interval_sec = 5
-  timeout_sec        = 1
-
-  http_health_check {
-    port         = "80"
-    request_path = "/"
-  }
-
-  lifecycle {
-    create_before_destroy = true
+  auto_healing_policies {
+    health_check      = google_compute_health_check.autohealing.self_link
+    initial_delay_sec = 2000
   }
 }
 
@@ -68,9 +69,10 @@ resource "google_compute_instance_group_manager" "gitlab-server-mig-b" {
   name               = "gitlab-server-mig-b"
   base_instance_name = "gitlab-server"
   version {
-      instance_template  = "${google_compute_instance_template.gitlab-server-template.self_link}"
+    instance_template = "${google_compute_instance_template.gitlab-server-template.self_link}"
   }
-  zone               = "asia-south1-b"
+  zone = "asia-south1-c"
+  target_size = 1
 
   named_port {
     name = "http"
@@ -80,13 +82,17 @@ resource "google_compute_instance_group_manager" "gitlab-server-mig-b" {
   lifecycle {
     create_before_destroy = true
   }
+
+  auto_healing_policies {
+    health_check      = google_compute_health_check.autohealing.self_link
+    initial_delay_sec = 2000
+  }
 }
 
 resource "google_compute_backend_service" "default" {
   name          = "gitlab-server-backend-service"
   port_name     = "http"
-  protocol      = "HTTP"
-  health_checks = ["${google_compute_health_check.default.self_link}"]
+  health_checks = ["${google_compute_health_check.autohealing.self_link}"]
 
   backend {
     group = "${google_compute_instance_group_manager.gitlab-server-mig-a.instance_group}"
@@ -122,34 +128,34 @@ resource "google_compute_global_forwarding_rule" "default" {
   target     = "${google_compute_target_https_proxy.default.self_link}"
 }
 
-resource "google_compute_autoscaler" "gitlab-server-mig-a-autoscaler" {
-  name   = "gitlab-server-mig-a-autoscaler"
-  zone   = "asia-south1-a"
-  target = "${google_compute_instance_group_manager.gitlab-server-mig-a.self_link}"
+# resource "google_compute_autoscaler" "gitlab-server-mig-a-autoscaler" {
+#   name   = "gitlab-server-mig-a-autoscaler"
+#   zone   = "asia-south1-a"
+#   target = "${google_compute_instance_group_manager.gitlab-server-mig-a.self_link}"
 
-  autoscaling_policy {
-    max_replicas    = 3
-    min_replicas    = 1
-    cooldown_period = 60
+#   autoscaling_policy {
+#     max_replicas    = 3
+#     min_replicas    = 1
+#     cooldown_period = 60
 
-    cpu_utilization {
-      target = 0.8
-    }
-  }
-}
+#     cpu_utilization {
+#       target = 0.8
+#     }
+#   }
+# }
 
-resource "google_compute_autoscaler" "gitlab-server-mig-b-autoscaler" {
-  name   = "gitlab-server-mig-b-autoscaler"
-  zone   = "asia-south1-b"
-  target = "${google_compute_instance_group_manager.gitlab-server-mig-b.self_link}"
+# resource "google_compute_autoscaler" "gitlab-server-mig-b-autoscaler" {
+#   name   = "gitlab-server-mig-b-autoscaler"
+#   zone   = "asia-south1-b"
+#   target = "${google_compute_instance_group_manager.gitlab-server-mig-b.self_link}"
 
-  autoscaling_policy {
-    max_replicas    = 3
-    min_replicas    = 1
-    cooldown_period = 60
+#   autoscaling_policy {
+#     max_replicas    = 3
+#     min_replicas    = 1
+#     cooldown_period = 60
 
-    cpu_utilization {
-      target = 0.8
-    }
-  }
-}
+#     cpu_utilization {
+#       target = 0.8
+#     }
+#   }
+# }
