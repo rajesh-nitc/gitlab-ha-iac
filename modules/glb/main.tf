@@ -65,29 +65,29 @@ resource "google_compute_instance_group_manager" "gitlab-server-mig-a" {
   }
 }
 
-# resource "google_compute_instance_group_manager" "gitlab-server-mig-b" {
-#   name               = "gitlab-server-mig-b"
-#   base_instance_name = "gitlab-server"
-#   version {
-#     instance_template = "${google_compute_instance_template.gitlab-server-template.self_link}"
-#   }
-#   zone = "asia-south1-c"
-#   target_size = 1
+resource "google_compute_instance_group_manager" "gitlab-server-mig-b" {
+  name               = "gitlab-server-mig-b"
+  base_instance_name = "gitlab-server"
+  version {
+    instance_template = "${google_compute_instance_template.gitlab-server-template.self_link}"
+  }
+  zone = "asia-south1-c"
+  target_size = 1
 
-#   named_port {
-#     name = "http"
-#     port = 80
-#   }
+  named_port {
+    name = "http"
+    port = 80
+  }
 
-#   lifecycle {
-#     create_before_destroy = true
-#   }
+  lifecycle {
+    create_before_destroy = true
+  }
 
-#   auto_healing_policies {
-#     health_check      = google_compute_health_check.autohealing.self_link
-#     initial_delay_sec = 100
-#   }
-# }
+  auto_healing_policies {
+    health_check      = google_compute_health_check.autohealing.self_link
+    initial_delay_sec = 100
+  }
+}
 
 resource "google_compute_backend_service" "default" {
   name          = "gitlab-server-backend-service"
@@ -98,9 +98,9 @@ resource "google_compute_backend_service" "default" {
     group = "${google_compute_instance_group_manager.gitlab-server-mig-a.instance_group}"
   }
 
-  # backend {
-  #   group = "${google_compute_instance_group_manager.gitlab-server-mig-b.instance_group}"
-  # }
+  backend {
+    group = "${google_compute_instance_group_manager.gitlab-server-mig-b.instance_group}"
+  }
 
 }
 
@@ -128,34 +128,34 @@ resource "google_compute_global_forwarding_rule" "default" {
   target     = "${google_compute_target_https_proxy.default.self_link}"
 }
 
-# resource "google_compute_autoscaler" "gitlab-server-mig-a-autoscaler" {
-#   name   = "gitlab-server-mig-a-autoscaler"
-#   zone   = "asia-south1-a"
-#   target = "${google_compute_instance_group_manager.gitlab-server-mig-a.self_link}"
+resource "google_compute_autoscaler" "gitlab-server-mig-a-autoscaler" {
+  name   = "gitlab-server-mig-a-autoscaler"
+  zone   = "asia-south1-a"
+  target = "${google_compute_instance_group_manager.gitlab-server-mig-a.self_link}"
 
-#   autoscaling_policy {
-#     max_replicas    = 3
-#     min_replicas    = 1
-#     cooldown_period = 60
+  autoscaling_policy {
+    max_replicas    = 2
+    min_replicas    = 1
+    cooldown_period = 60
 
-#     cpu_utilization {
-#       target = 0.8
-#     }
-#   }
-# }
+    cpu_utilization {
+      target = 0.8
+    }
+  }
+}
 
-# resource "google_compute_autoscaler" "gitlab-server-mig-b-autoscaler" {
-#   name   = "gitlab-server-mig-b-autoscaler"
-#   zone   = "asia-south1-b"
-#   target = "${google_compute_instance_group_manager.gitlab-server-mig-b.self_link}"
+resource "google_compute_autoscaler" "gitlab-server-mig-b-autoscaler" {
+  name   = "gitlab-server-mig-b-autoscaler"
+  zone   = "asia-south1-c"
+  target = "${google_compute_instance_group_manager.gitlab-server-mig-b.self_link}"
 
-#   autoscaling_policy {
-#     max_replicas    = 3
-#     min_replicas    = 1
-#     cooldown_period = 60
+  autoscaling_policy {
+    max_replicas    = 2
+    min_replicas    = 1
+    cooldown_period = 60
 
-#     cpu_utilization {
-#       target = 0.8
-#     }
-#   }
-# }
+    cpu_utilization {
+      target = 0.8
+    }
+  }
+}

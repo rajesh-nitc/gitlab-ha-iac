@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -xe
+# set -xe
 
 # sudo apt-get update
 # sudo apt-get install -y curl openssh-server ca-certificates
@@ -14,10 +14,10 @@ set -xe
 # mkdir -p /opt/app
 # gsutil -m cp -R gs://tf-first-project-bucket /opt/app
 
-sudo apt-get update
-sudo apt-get install -y curl openssh-server ca-certificates
-curl https://packages.gitlab.com/install/repositories/gitlab/gitlab-ee/script.deb.sh | sudo bash
-sudo apt-get install gitlab-ee -y
+apt-get update
+apt-get install -y curl openssh-server ca-certificates
+curl https://packages.gitlab.com/install/repositories/gitlab/gitlab-ce/script.deb.sh | bash
+apt-get install gitlab-ce -y
 # sudo mkdir -p /opt/app
 # gsutil -m cp -R gs://tf-first-project-bucket /opt/app
 # sudo mkdir -p /etc/gitlab/ssl
@@ -25,4 +25,4 @@ sudo apt-get install gitlab-ee -y
 # sudo cp /opt/app/tf-first-project-bucket/live/budita.dev/cert.pem /etc/gitlab/ssl/budita.dev.crt
 # sudo cp /opt/app/tf-first-project-bucket/live/budita.dev/privkey.pem /etc/gitlab/ssl/budita.dev.key
 # sudo cp /opt/app/tf-first-project-bucket/gitlab.rb /etc/gitlab/gitlab.rb
-sudo gitlab-ctl reconfigure
+# gitlab-ctl reconfigure
