@@ -2,7 +2,7 @@ resource "google_compute_instance_template" "gitlab-server-template" {
   name_prefix    = "gitlab-server-"
   machine_type   = "n1-standard-1"
   region         = "asia-south1"
-  tags           = ["allow-health-checks"]
+  # tags           = ["foo","bar"]
   can_ip_forward = true
 
   metadata_startup_script = templatefile("${path.module}/templates/startup-script.tmpl", {})
@@ -61,33 +61,33 @@ resource "google_compute_instance_group_manager" "gitlab-server-mig-a" {
 
   auto_healing_policies {
     health_check      = google_compute_health_check.autohealing.self_link
-    initial_delay_sec = 2000
+    initial_delay_sec = 3600
   }
 }
 
-resource "google_compute_instance_group_manager" "gitlab-server-mig-b" {
-  name               = "gitlab-server-mig-b"
-  base_instance_name = "gitlab-server"
-  version {
-    instance_template = "${google_compute_instance_template.gitlab-server-template.self_link}"
-  }
-  zone = "asia-south1-c"
-  target_size = 1
+# resource "google_compute_instance_group_manager" "gitlab-server-mig-b" {
+#   name               = "gitlab-server-mig-b"
+#   base_instance_name = "gitlab-server"
+#   version {
+#     instance_template = "${google_compute_instance_template.gitlab-server-template.self_link}"
+#   }
+#   zone = "asia-south1-c"
+#   target_size = 1
 
-  named_port {
-    name = "http"
-    port = 80
-  }
+#   named_port {
+#     name = "http"
+#     port = 80
+#   }
 
-  lifecycle {
-    create_before_destroy = true
-  }
+#   lifecycle {
+#     create_before_destroy = true
+#   }
 
-  auto_healing_policies {
-    health_check      = google_compute_health_check.autohealing.self_link
-    initial_delay_sec = 2000
-  }
-}
+#   auto_healing_policies {
+#     health_check      = google_compute_health_check.autohealing.self_link
+#     initial_delay_sec = 100
+#   }
+# }
 
 resource "google_compute_backend_service" "default" {
   name          = "gitlab-server-backend-service"
@@ -98,9 +98,9 @@ resource "google_compute_backend_service" "default" {
     group = "${google_compute_instance_group_manager.gitlab-server-mig-a.instance_group}"
   }
 
-  backend {
-    group = "${google_compute_instance_group_manager.gitlab-server-mig-b.instance_group}"
-  }
+  # backend {
+  #   group = "${google_compute_instance_group_manager.gitlab-server-mig-b.instance_group}"
+  # }
 
 }
 
