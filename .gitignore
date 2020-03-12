@@ -1,2 +1,2 @@
-modules/glb/files/*
+/modules/glb/files/*
 **/.terraform/*
