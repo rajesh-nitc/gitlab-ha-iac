@@ -2,20 +2,23 @@ module "vpc" {
   source  = "terraform-google-modules/network/google"
   version = "~> 2.1"
 
-  project_id   = "tf-first-project"
-  network_name = "gitlab-vpc"
+  project_id   = "${var.project_id}"
+  network_name = "${var.network_name}"
   routing_mode = "GLOBAL"
 
   subnets = [
     {
-      subnet_name   = "subnet-01"
-      subnet_ip     = "10.10.10.0/24"
-      subnet_region = "asia-south1"
+      subnet_name           = "subnet-primary"
+      subnet_ip             = "10.10.10.0/24"
+      subnet_region         = "${var.region_primary}"
+      subnet_private_access = "true"
+      subnet_flow_logs      = "false"
+      description           = "This subnet has a description"
     },
     {
-      subnet_name           = "subnet-02"
+      subnet_name           = "subnet-dr"
       subnet_ip             = "10.10.20.0/24"
-      subnet_region         = "asia-south1"
+      subnet_region         = "${var.region_dr}"
       subnet_private_access = "true"
       subnet_flow_logs      = "false"
       description           = "This subnet has a description"

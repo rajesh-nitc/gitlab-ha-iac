@@ -1,3 +1,21 @@
 variable "region" {}
 
 variable "project_id" {}
+variable "region_primary" {}
+variable "region_dr" {}
+variable "instance_template_primary_name_prefix" {}
+variable "instance_template_primary_machine_type" {}
+variable "instance_template_primary_disk_source_image" {}
+variable "instance_template_dr_name_prefix" {}
+variable "instance_template_dr_machine_type" {}
+variable "instance_template_dr_disk_source_image" {}
+variable "mig_primary_name" {}
+variable "mig_primary_base_instance_name" {}
+variable "mig_primary_distribution_policy_zones" {}
+variable "mig_primary_target_size" {}
+variable "named_port" {}
+variable "mig_dr_name" {}
+variable "mig_dr_base_instance_name" {}
+variable "mig_dr_distribution_policy_zones" {}
+variable "mig_dr_target_size" {}
+variable "glb_ip_address" {}
