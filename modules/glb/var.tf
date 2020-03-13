@@ -12,3 +12,11 @@ variable "glb_ip_address" {
 variable "named_port" {
   
 }
+
+variable "capacity_scaler_primary" {
+  
+}
+
+variable "capacity_scaler_dr" {
+  
+}
