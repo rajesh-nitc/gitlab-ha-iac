@@ -36,6 +36,7 @@ gsutil -m cp -R gs://tf-first-project-bucket /opt/app
 cp /opt/app/tf-first-project-bucket/gitlab.rb /etc/gitlab/gitlab.rb
 wget https://dl.google.com/cloudsql/cloud_sql_proxy.linux.amd64 -O cloud_sql_proxy
 chmod +x cloud_sql_proxy
-# ./cloud_sql_proxy -instances=${project_id}:${region}:${db_instance_name}=tcp:5432 -quiet &
+mv cloud_sql_proxy /opt/app
+# /opt/app/cloud_sql_proxy -instances=${project_id}:${region}:${db_instance_name}=tcp:5432 -quiet &
 echo "=================== startup-script finished ====================="
 # gitlab-ctl reconfigure
