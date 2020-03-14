@@ -1,6 +1,6 @@
 project_id     = "tf-first-project"
 network_name   = "gitlab-vpc1"
-glb_ip_address = ""
+glb_ip_address = "34.107.133.237"
 named_port     = "http"
 db_name = "gitlabhq_production"
 db_user         = "gitlab"

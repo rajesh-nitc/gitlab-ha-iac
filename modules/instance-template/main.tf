@@ -5,7 +5,11 @@ resource "google_compute_instance_template" "appserver-template" {
   tags           = var.instance_template_tags
   can_ip_forward = true
 
-  metadata_startup_script = templatefile("${path.module}/templates/startup-script.tmpl", {})
+  metadata_startup_script = templatefile("${path.module}/templates/startup-script.tmpl", {
+    project_id = var.project_id,
+    region = var.region
+    db_instance_name = var.db_instance_name
+  })
 
   scheduling {
     automatic_restart   = true

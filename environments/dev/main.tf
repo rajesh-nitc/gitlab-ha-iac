@@ -21,21 +21,25 @@ module "vpc" {
 module "instance_template_primary" {
   source                              = "../../modules/instance-template"
   instance_template_subnetwork        = "${element(module.vpc.subnets_names, 0)}"
+  db_instance_name = module.db-primary-n-dr.db_instance_primary_name
   instance_template_name_prefix       = "gitlab-server-primary-"
   instance_template_machine_type      = "n1-standard-1"
   region    = "asia-south1"
-  instance_template_disk_source_image = "tf-first-project/gitlab-server"
+  instance_template_disk_source_image = "debian-cloud/debian-9"
   instance_template_tags              = ["primary"]
+  project_id     = var.project_id 
 }
 
 module "instance_template_dr" {
   source                              = "../../modules/instance-template"
   instance_template_subnetwork        = "${element(module.vpc.subnets_names, 1)}"
+  db_instance_name = module.db-primary-n-dr.db_instance_dr_name
   instance_template_name_prefix       = "gitlab-server-dr-"
   instance_template_machine_type      = "n1-standard-1"
   region           = "asia-southeast1"
-  instance_template_disk_source_image = "tf-first-project/gitlab-server"
+  instance_template_disk_source_image = "debian-cloud/debian-9"
   instance_template_tags              = ["dr"]
+  project_id     = var.project_id
 }
 
 module "health_check" {
@@ -46,11 +50,11 @@ module "mig_primary" {
   source                        = "../../modules/mig"
   mig_instance_template         = module.instance_template_primary.instance_template_self_link
   auto_healing_health_check     = module.health_check.health_check_self_link
-  mig_name                      = "mig-primary"
-  mig_base_instance_name        = "gitlab-primary"
+  mig_name                      = "mig4-primary"
+  mig_base_instance_name        = "app4-primary"
   region    = "asia-south1"
   mig_distribution_policy_zones = ["asia-south1-a", "asia-south1-b", "asia-south1-c"]
-  mig_target_size               = 3
+  mig_target_size               = 2
   named_port                    = var.named_port
 }
 
@@ -58,8 +62,8 @@ module "mig_dr" {
   source                        = "../../modules/mig"
   mig_instance_template         = module.instance_template_dr.instance_template_self_link
   auto_healing_health_check     = module.health_check.health_check_self_link
-  mig_name                      = "mig-dr"
-  mig_base_instance_name        = "gitlab-dr"
+  mig_name                      = "mig2-dr"
+  mig_base_instance_name        = "app2-dr"
   region           = "asia-southeast1"
   mig_distribution_policy_zones = ["asia-southeast1-a"]
   mig_target_size               = 1
