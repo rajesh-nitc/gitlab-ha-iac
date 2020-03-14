@@ -6,7 +6,7 @@ variable "instance_template_machine_type" {
   
 }
 
-variable "instance_template_region" {
+variable "region" {
   
 }
 

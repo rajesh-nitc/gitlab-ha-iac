@@ -6,7 +6,7 @@ variable "mig_base_instance_name" {
   
 }
 
-variable "mig_region" {
+variable "region" {
   
 }
 

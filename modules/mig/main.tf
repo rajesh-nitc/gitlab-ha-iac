@@ -1,7 +1,7 @@
 resource "google_compute_region_instance_group_manager" "mig" {
   name                      = var.mig_name
   base_instance_name        = var.mig_base_instance_name
-  region                    = var.mig_region
+  region                    = var.region
   distribution_policy_zones = var.mig_distribution_policy_zones
 
   version {

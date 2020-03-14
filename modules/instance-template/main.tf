@@ -1,7 +1,7 @@
 resource "google_compute_instance_template" "appserver-template" {
   name_prefix    = var.instance_template_name_prefix
   machine_type   = var.instance_template_machine_type
-  region         = var.instance_template_region
+  region         = var.region
   tags           = var.instance_template_tags
   can_ip_forward = true
 

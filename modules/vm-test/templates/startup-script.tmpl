@@ -1,0 +1,9 @@
+#!/bin/bash
+
+# set -eu
+
+# apt-get install postgresql-client
+wget https://dl.google.com/cloudsql/cloud_sql_proxy.linux.amd64 -O cloud_sql_proxy
+chmod +x cloud_sql_proxy
+./cloud_sql_proxy -instances=${project_id}:${region}:${db_instance_name}=tcp:5432
+# psql "host=127.0.0.1 sslmode=disable dbname=${db_name} user=${db_user} password=${db_password}"
