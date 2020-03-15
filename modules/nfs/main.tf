@@ -30,7 +30,7 @@ resource "google_compute_instance" "default" {
 
   metadata_startup_script = templatefile("${path.module}/templates/startup-script.tmpl", {
     primary_clients_subnet_ip = var.primary_clients_subnet_ip,
-    dr_clients_subnet_ip = var.dr_clients_subnet_ip
+    dr_clients_subnet_ip      = var.dr_clients_subnet_ip
   })
 
   service_account {

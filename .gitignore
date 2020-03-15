@@ -6,5 +6,4 @@
 *.tfstate.*
 
 # ssl-certs
-/modules/glb/files/*
 /modules/glb/ssl-cert/*

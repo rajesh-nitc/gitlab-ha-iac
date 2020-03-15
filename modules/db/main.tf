@@ -23,14 +23,14 @@ resource "random_id" "db_name_suffix_primary" {
 resource "google_sql_database_instance" "primary" {
   provider = google-beta
 
-  name   = "db-primary-${random_id.db_name_suffix_primary.hex}"
+  name             = "db-primary-${random_id.db_name_suffix_primary.hex}"
   database_version = var.database_version
-  region = var.region_primary
+  region           = var.region_primary
 
   depends_on = [google_service_networking_connection.private_vpc_connection]
 
   settings {
-    tier = "db-f1-micro"
+    tier              = "db-f1-micro"
     availability_type = "REGIONAL"
     ip_configuration {
       ipv4_enabled    = false
@@ -58,7 +58,7 @@ resource "google_sql_database_instance" "dr" {
   provider = google-beta
 
   name                 = "db-dr-${random_id.db_name_suffix_dr.hex}"
-  database_version = var.database_version
+  database_version     = var.database_version
   master_instance_name = google_sql_database_instance.primary.name
   region               = var.region_dr
 
