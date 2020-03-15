@@ -21,3 +21,4 @@ variable "instance_template_subnetwork" {
 variable "instance_template_tags" {}
 variable "db_instance_name" {}
 variable "project_id" {}
+variable "nfs_host" {}

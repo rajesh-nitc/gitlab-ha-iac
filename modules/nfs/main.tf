@@ -1,9 +1,9 @@
 resource "google_compute_instance" "default" {
-  name         = "test"
+  name         = "nfs"
   machine_type = "n1-standard-1"
   zone         = "asia-south1-a"
 
-  tags = ["foo", "bar"]
+  tags = ["nfs"]
 
   boot_disk {
     initialize_params {
@@ -29,12 +29,8 @@ resource "google_compute_instance" "default" {
   }
 
   metadata_startup_script = templatefile("${path.module}/templates/startup-script.tmpl", {
-    project_id = var.project_id,
-    region = var.region
-    db_instance_name = var.db_instance_name
-    db_name=var.db_name
-    db_user=var.db_user
-    db_password=var.db_password
+    primary_clients_subnet_ip = var.primary_clients_subnet_ip,
+    dr_clients_subnet_ip = var.dr_clients_subnet_ip
   })
 
   service_account {

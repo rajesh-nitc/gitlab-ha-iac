@@ -28,15 +28,23 @@ set -xe
 # gitlab-ctl reconfigure
 
 apt-get update
-apt-get install -y curl openssh-server ca-certificates postgresql-client
+apt-get install -y curl openssh-server ca-certificates postgresql-client nfs-common
 curl https://packages.gitlab.com/install/repositories/gitlab/gitlab-ee/script.deb.sh | bash
 apt-get install gitlab-ee -y
 mkdir -p /opt/app
 gsutil -m cp -R gs://tf-first-project-bucket /opt/app
-cp /opt/app/tf-first-project-bucket/gitlab.rb /etc/gitlab/gitlab.rb
+cp /opt/app/tf-first-project-bucket/gitlab.rb.tmpl /etc/gitlab/gitlab.rb
+
+# Cloudsqlproxy
 wget https://dl.google.com/cloudsql/cloud_sql_proxy.linux.amd64 -O cloud_sql_proxy
 chmod +x cloud_sql_proxy
 mv cloud_sql_proxy /opt/app
 # /opt/app/cloud_sql_proxy -instances=${project_id}:${region}:${db_instance_name}=tcp:5432 -quiet &
+
+# Nfs
+mkdir -p /nfs/home
+echo "${nfs_host}:/home /nfs/home nfs4 defaults,soft,rsize=1048576,wsize=1048576,noatime,nofail,lookupcache=positive 0 2"
+mount ${nfs_host}:/home
+
 echo "=================== startup-script finished ====================="
 # gitlab-ctl reconfigure

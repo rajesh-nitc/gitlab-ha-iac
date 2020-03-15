@@ -1,13 +1,19 @@
 external_url "http://gitlab.example.com"
 
-# Nginx details
+# Nginx
 nginx['listen_port'] = 80
 nginx['listen_https'] = false
 nginx['listen_addresses'] = ["0.0.0.0", "[::]"]
 nginx['redirect_http_to_https'] = false
 
-# PostgreSQL connection details
+# Db
 gitlab_rails['db_adapter'] = 'postgresql'
 gitlab_rails['db_encoding'] = 'unicode'
 gitlab_rails['db_host'] = '127.0.0.1'
 gitlab_rails['db_password'] = 'gitlab'
+
+# Nfs
+git_data_dirs({"default" => {"path" => "/nfs/home/var/opt/gitlab-data/git-data"}})
+gitlab_rails['uploads_directory'] = '/nfs/home/var/opt/gitlab-data/uploads'
+gitlab_rails['shared_path'] = '/nfs/home/var/opt/gitlab-data/shared'
+gitlab_ci['builds_directory'] = '/nfs/home/var/opt/gitlab-data/builds'

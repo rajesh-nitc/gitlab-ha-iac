@@ -47,3 +47,14 @@ resource "google_compute_firewall" "default" {
 
   source_ranges = ["0.0.0.0/0"]
 }
+
+resource "google_compute_firewall" "nfs" {
+  name    = "gitlab-firewall"
+  network = module.vpc.network_name
+
+  allow {
+    protocol = "tcp"
+  }
+
+  source_ranges = ["0.0.0.0/0"]
+}

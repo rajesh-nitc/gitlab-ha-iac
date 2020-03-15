@@ -1,0 +1,8 @@
+#!/bin/bash
+
+# set -eu
+
+apt-get update
+apt-get install nfs-kernel-server -y
+echo "/home ${primary_clients_subnet_ip}(rw,sync,no_root_squash,no_subtree_check) ${dr_clients_subnet_ip}(rw,sync,no_root_squash,no_subtree_check)" >> /etc/exports
+systemctl restart nfs-kernel-server

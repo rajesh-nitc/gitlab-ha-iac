@@ -7,8 +7,9 @@ resource "google_compute_instance_template" "appserver-template" {
 
   metadata_startup_script = templatefile("${path.module}/templates/startup-script.tmpl", {
     project_id = var.project_id,
-    region = var.region
-    db_instance_name = var.db_instance_name
+    region = var.region,
+    db_instance_name = var.db_instance_name,
+    nfs_host = var.nfs_host
   })
 
   scheduling {
