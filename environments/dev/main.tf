@@ -52,8 +52,8 @@ module "mig_primary" {
   source                        = "../../modules/mig"
   mig_instance_template         = module.instance_template_primary.instance_template_self_link
   auto_healing_health_check     = module.health_check.health_check_self_link
-  mig_name                      = "mig-primary"
-  mig_base_instance_name        = "app-primary"
+  mig_name                      = "mig1-primary"
+  mig_base_instance_name        = "app1-primary"
   region    = "asia-south1"
   mig_distribution_policy_zones = ["asia-south1-a", "asia-south1-b", "asia-south1-c"]
   mig_target_size               = 2
@@ -64,8 +64,8 @@ module "mig_dr" {
   source                        = "../../modules/mig"
   mig_instance_template         = module.instance_template_dr.instance_template_self_link
   auto_healing_health_check     = module.health_check.health_check_self_link
-  mig_name                      = "mig-dr"
-  mig_base_instance_name        = "app-dr"
+  mig_name                      = "mig1-dr"
+  mig_base_instance_name        = "app1-dr"
   region           = "asia-southeast1"
   mig_distribution_policy_zones = ["asia-southeast1-a"]
   mig_target_size               = 1

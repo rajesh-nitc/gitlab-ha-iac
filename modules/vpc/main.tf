@@ -37,7 +37,7 @@ module "vpc" {
 }
 
 resource "google_compute_firewall" "default" {
-  name    = "gitlab-firewall"
+  name    = "app-firewall"
   network = module.vpc.network_name
 
   allow {
@@ -49,7 +49,7 @@ resource "google_compute_firewall" "default" {
 }
 
 resource "google_compute_firewall" "nfs" {
-  name    = "gitlab-firewall"
+  name    = "nfs-open"
   network = module.vpc.network_name
 
   allow {

@@ -2,31 +2,7 @@
 
 set -xe
 
-# sudo apt-get update
-# sudo apt-get install -y curl openssh-server ca-certificates
-# curl https://packages.gitlab.com/install/repositories/gitlab/gitlab-ee/script.deb.sh | sudo bash
-# apt-get install gitlab-ee -y
-# sed -i 's/^external_url.*/external_url "http:\/\/34.107.133.237"/' /etc/gitlab/gitlab.rb
-# echo "nginx['listen_port'] = 80" >> /etc/gitlab/gitlab.rb
-# echo "nginx['listen_https'] = false" >> /etc/gitlab/gitlab.rb
-# gitlab-ctl reconfigure
-
-# mkdir -p /opt/app
-# gsutil -m cp -R gs://tf-first-project-bucket /opt/app
-
-# apt-get update
-# apt-get install -y curl openssh-server ca-certificates
-# curl https://packages.gitlab.com/install/repositories/gitlab/gitlab-ce/script.deb.sh | bash
-# apt-get install gitlab-ce -y
-# sudo mkdir -p /opt/app
-# gsutil -m cp -R gs://tf-first-project-bucket /opt/app
-# sudo mkdir -p /etc/gitlab/ssl
-# sudo chmod 755 /etc/gitlab/ssl
-# sudo cp /opt/app/tf-first-project-bucket/live/budita.dev/cert.pem /etc/gitlab/ssl/budita.dev.crt
-# sudo cp /opt/app/tf-first-project-bucket/live/budita.dev/privkey.pem /etc/gitlab/ssl/budita.dev.key
-# sudo cp /opt/app/tf-first-project-bucket/gitlab.rb /etc/gitlab/gitlab.rb
-# gitlab-ctl reconfigure
-
+# Gitlab EE
 apt-get update
 apt-get install -y curl openssh-server ca-certificates postgresql-client nfs-common
 curl https://packages.gitlab.com/install/repositories/gitlab/gitlab-ee/script.deb.sh | bash
@@ -35,16 +11,19 @@ mkdir -p /opt/app
 gsutil -m cp -R gs://tf-first-project-bucket /opt/app
 cp /opt/app/tf-first-project-bucket/gitlab.rb.tmpl /etc/gitlab/gitlab.rb
 
-# Cloudsqlproxy
+# Cloud SQL Proxy
 wget https://dl.google.com/cloudsql/cloud_sql_proxy.linux.amd64 -O cloud_sql_proxy
 chmod +x cloud_sql_proxy
 mv cloud_sql_proxy /opt/app
 # /opt/app/cloud_sql_proxy -instances=${project_id}:${region}:${db_instance_name}=tcp:5432 -quiet &
+# psql "host=127.0.0.1 sslmode=disable dbname=gitlabhq_production user=gitlab password=gitlab"
 
 # Nfs
 mkdir -p /nfs/home
-echo "${nfs_host}:/home /nfs/home nfs4 defaults,soft,rsize=1048576,wsize=1048576,noatime,nofail,lookupcache=positive 0 2"
+echo "${nfs_host}:/home /nfs/home nfs4 defaults,soft,rsize=1048576,wsize=1048576,noatime,nofail,lookupcache=positive 0 2" >> /etc/fstab
 mount ${nfs_host}:/home
 
-echo "=================== startup-script finished ====================="
 # gitlab-ctl reconfigure
+# /opt/app/cloud_sql_proxy -instances=${project_id}:${region}:${db_instance_name}=tcp:5432 -quiet &
+# gitlab-ctl reconfigure
+# https://docs.gitlab.com/ee/administration/high_availability/gitlab.html#first-gitlab-application-server
