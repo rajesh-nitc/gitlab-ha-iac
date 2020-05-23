@@ -1,6 +1,6 @@
 ## gitlab-ha-iac
 
-### deploy highly available, resilient and scalable gitlab solution
+#### deploy highly available, resilient and scalable gitlab solution
 ```
 cd environments/dev
 terraform init
