@@ -1,4 +1,4 @@
-# GitLab
+# Iac
 Deploy highly available, resilient and scalable gitlab solution
 ## Getting Started
 
