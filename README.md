@@ -8,3 +8,4 @@ terraform init
 terraform plan
 terraform apply --auto-approve
 ```
+*This will deploy mig in primary region, mig in secondar or dr region, global load balancer, vpc, cloudsql and nfs*
